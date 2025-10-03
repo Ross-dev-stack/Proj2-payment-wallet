@@ -23,7 +23,7 @@ export const AddMoney = () => {
     <div className="w-full">
         <TextInput label={"Amount"} placeholder={"Amount"} 
                   onChange={(value) => {
-                    setAmount(value)
+                    setAmount(Number(value))
                   }}
          />
         <div className="py-4 text-left">
@@ -31,6 +31,7 @@ export const AddMoney = () => {
         </div>
         <Select onSelect={(value) => {
             setRedirectUrl(SUPPORTED_BANKS.find(x => x.name === value)?.redirectUrl || "")
+            setProvider(SUPPORTED_BANKS.find(x => x.name === value)?.redirectUrl || "")
         }} options={SUPPORTED_BANKS.map(x => ({
             key: x.name,
             value: x.name

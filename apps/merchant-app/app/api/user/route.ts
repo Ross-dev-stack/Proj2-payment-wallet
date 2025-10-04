@@ -1,18 +1,26 @@
-import { NextResponse } from "next/server"
-import { PrismaClient } from "@repo/db/client";
+import prisma from "@repo/db/client";
+import { NextResponse } from "next/server";
+import { randomBytes } from "crypto";
 
-const client = new PrismaClient();
+export async function POST(req: Request) {
+  const { email, name } = await req.json();
 
-export const GET = async () => {
-    await client.user.create({
-        data: {
-            email: "test@test.com",
-            name: "John",
-            number: "1234567890",
-            password: "hashedpassword", 
-        }
-    })
-    return NextResponse.json({
-        message: "hi there"
-    })
+  try {
+    const user = await prisma.user.upsert({
+      where: { email },
+      update: { name },
+      create: {
+        email,
+        name,
+        number: "0000000000", // placeholder
+        password: randomBytes(16).toString("hex"), // dummy password
+      },
+    });
+  
+    console.log("User upserted:", user);
+  } 
+  catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Failed to create or update user" }, { status: 500 });
+  }
 }
